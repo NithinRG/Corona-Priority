@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'home.css') }}">
+</head>
+<body>
+    <div class="nav">
+        <div class="burger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+        <div class="header">
+            <h4>COVID-19</h4>
+        </div>
+        <ul class="nav-items">
+            <li>
+                <a href="#">
+                    <span class="title">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="title">Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="title">Password</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="title">Help</span>
+                </a>
+            </li>
+            <li>
+                <a href="/signout">
+                    <span class="title">Sign out</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <h1 class="welcomeHeader">Welcome {{ fname }}!</h1>
+    <div class="details">
+        <div class="item1"><img src="{{ url_for('static', filename = 'avatar.jpg') }}" alt=""></div>
+        <div class="item2">
+            <div class="contentWrapper">
+                <span class="name">Name: {{ fname }} {{ lname }}</span>
+                <span class="age">Age: {{ age }} years</span>
+                <span class="city">City: {{ city }}</span>
+                <span class="state">State: {{ state }}</span>
+                <span class="score">Priority Score: {{ score }}</span>
+            </div>
+        </div>
+    </div>
+    <script src = "{{ url_for('static', filename = 'home.js') }}"></script>
+</body>
+</html>
