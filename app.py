@@ -82,6 +82,7 @@ def predict():
         output = round(prediction[0], 2)
         timeNow = time.asctime(time.localtime(time.time()))
         formdata['score'] = output
+        formdata['status'] = False
         formdata['time'] = timeNow
         session['form'] = formdata.copy()
         user_collection.insert_one(formdata)
