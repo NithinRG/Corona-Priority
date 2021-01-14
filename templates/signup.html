@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'login.css') }}" />
+  </head>
+  <body>
+<div class="form">
+      
+      <ul class="tab-group">
+      </ul>
+      <div id="login">   
+        <h1>Hello there!</h1>
+        
+        <form action="" method="post">
+            <div class="field-wrap">
+                <input type="text"required autocomplete="off" name="aadhar_number" placeholder="Aadhar Number" required/>
+            </div>
+            
+            
+            <div class="field-wrap">
+                <input type="text"required autocomplete="off" name="phone_number" placeholder="Phone Number" required/>
+            </div>
+            
+            <div class="field-wrap">
+                <input type="password"required autocomplete="off" name="password" placeholder="Set a Password" required/>
+            </div>
+              
+            <p class="redirect">Already registered? <a href="/login">Login</a></p>
+
+            <p class="incorrect">{{ incorrect }}</p>
+              
+            <button type="submit" class="button button-block"/>Get Started</button>
+        
+        </form>
+
+      </div>
+      
+</div>
+</body>
+</html>

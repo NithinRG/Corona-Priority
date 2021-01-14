@@ -1,5 +1,6 @@
-from flask import Flask, redirect, url_for, render_template, request, session
+from flask import Flask, redirect, url_for, render_template, request, session, jsonify
 from flask_pymongo import PyMongo
+from bson import ObjectId
 import pickle
 import numpy as np
 import time
@@ -18,36 +19,96 @@ user_collection = mongo.db.test_collection
 def home():
     if not 'loggedIn' in session:
         return redirect(url_for("login"))
-    elif not 'formFilled' in session:
-        return redirect(url_for("form"))
+    elif session['privileges'] == 'user':
+        if session["formFilled"] == False:
+            return redirect(url_for("form"))
+        else:
+            user = user_collection.find_one(
+                ({'aadhar_number': session['aadhar_number']}))
+            formattedName = user['fname'] + " " + user['lname']
+            fname = user['fname']
+            lname = user['lname']
+            age = user['age']
+            city = user['city']
+            state = user['state']
+            score = user['score']
+            return render_template("index.html", fname=fname, lname=lname, age=age, city=city, state=state, score=score)
+    elif session['privileges'] == 'admin':
+        users = user_collection.find()
+        numUsers = user_collection.count_documents({})
+        return render_template("admin.html", users=users, numUsers=numUsers)
+
+
+@app.route("/signup", methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        credentials = request.form.to_dict()
+        aadhar_number = credentials["aadhar_number"]
+        phone_number = credentials["phone_number"]
+        password = credentials["password"]
+        existing_user = user_collection.find_one(
+            ({"aadhar_number": aadhar_number}))
+        if existing_user is None:
+            user_collection.insert_one({"fname": None,
+                                        "lname": None,
+                                        "aadhar_number": aadhar_number,
+                                        "phone_number": phone_number,
+                                        "password": password,
+                                        "form_filled": False,
+                                        'age': None,
+                                        'gender': None,
+                                        "state": None,
+                                        'city': None,
+                                        'address': None,
+                                        'job': None,
+                                        "diabetes": None,
+                                        'BP': None,
+                                        "heart": None,
+                                        "pregnant": None,
+                                        "score": None,
+                                        "status": False,
+                                        "time": None})
+            return redirect(url_for("login"))
+        else:
+            return render_template("signup.html", incorrect="User already exists")
     else:
-        formdata = session['form']
-        formattedName = formdata['fname'] + " " + formdata['lname']
-        fname = formdata['fname']
-        lname = formdata['lname']
-        age = formdata['age']
-        city = formdata['city']
-        state = formdata['state']
-        score = formdata['score']
-        return render_template("index.html", fname=fname, lname=lname, age=age, city=city, state=state, score=score)
+        if not 'loggedIn' in session:
+            return render_template("signup.html")
+        elif session['formFilled'] == False:
+            return redirect(url_for("form"))
+        else:
+            return redirect(url_for("home"))
 
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         credentials = request.form.to_dict()
-        if credentials['loginId'] == 'Nithin' and credentials['password'] == "pass":
+        existing_user = user_collection.find_one(
+            ({"aadhar_number": credentials['loginId']}))
+        if credentials['loginId'] == 'admin' and credentials['password'] == "pass":
             session['loggedIn'] = True
-            if 'formFilled' in session:
-                return redirect(url_for("home"))
-            else:
-                return redirect(url_for("form"))
+            session['privileges'] = 'admin'
+            return redirect(url_for("home"))
         else:
-            return render_template("login.html", incorrect="Incorrect ID or password")
+            if existing_user is None:
+                return render_template("login.html", incorrect="Incorrect ID or password")
+            else:
+                if credentials['loginId'] == existing_user["aadhar_number"] and credentials['password'] == existing_user['password']:
+                    session['loggedIn'] = True
+                    session['privileges'] = 'user'
+                    session['aadhar_number'] = existing_user['aadhar_number']
+                    session['formFilled'] = existing_user['form_filled']
+                    if session['formFilled'] == True:
+                        return redirect(url_for("home"))
+                    else:
+                        return redirect(url_for("form"))
+                else:
+                    return render_template("login.html", incorrect="Incorrect ID or password")
     else:
         if not 'loggedIn' in session:
             return render_template("login.html")
-        elif not 'formFilled' in session:
+        elif session['formFilled'] == False:
             return redirect(url_for("form"))
         else:
             return redirect(url_for("home"))
@@ -58,7 +119,7 @@ def form():
     if request.method == 'GET':
         if not 'loggedIn' in session:
             return redirect(url_for("login"))
-        elif 'formFilled' in session:
+        elif session['privileges'] == 'admin' or session['formFilled'] == True:
             return redirect(url_for("home"))
     return render_template("form.html")
 
@@ -81,18 +142,39 @@ def predict():
 
         output = round(prediction[0], 2)
         timeNow = time.asctime(time.localtime(time.time()))
-        formdata['score'] = output
-        formdata['status'] = False
-        formdata['time'] = timeNow
-        session['form'] = formdata.copy()
-        user_collection.insert_one(formdata)
+        user_collection.update_one({'aadhar_number': session['aadhar_number']},
+                                   {'$set': {'fname': req.get("fname"),
+                                             'lname': req.get("lname"),
+                                             'age': req.get("age"),
+                                             'gender': req.get("gender"),
+                                             'state': req.get("state"),
+                                             'city': req.get("city"),
+                                             'address': req.get("address"),
+                                             'job': req.get("job"),
+                                             'diabetes': req.get("diabetes"),
+                                             'BP': req.get("BP"),
+                                             'heart': req.get("heart"),
+                                             'pregnant': req.get("pregnant"),
+                                             'score': output,
+                                             'time': timeNow,
+                                             'form_filled': True}})
         session['formFilled'] = True
     return redirect(url_for("home"))
+
+
+@app.route("/update", methods=['POST'])
+def update():
+    user = user_collection.find_one({"_id": ObjectId(str(request.form['id']))})
+    user['status'] = True
+    user_collection.update_one({"_id": ObjectId(str(request.form['id']))}, {
+                               '$set': {'status': True}})
+    return jsonify({'result': 'success'})
 
 
 @app.route("/signout")
 def signout():
     session.pop('loggedIn', None)
+    session.pop('privileges', None)
     return redirect(url_for("login"))
 
 

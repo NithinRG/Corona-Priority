@@ -1,0 +1,86 @@
+body {
+  background: #f8f8ff;
+  font-family: Rubik, sans-serif;
+  margin: 0;
+  overflow-x: hidden;
+  color: #686868;
+  font-weight: 300;
+}
+.navbar {
+  border: 0;
+  background-color: rgb(133, 180, 208);
+  position: relative;
+  min-height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.navhead {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+  /* position: absolute;
+    right: 70px;
+    top: 5px;
+    bottom: 5px; */
+}
+.heading {
+  color: #f8f8ff;
+  display: inline-block;
+  margin-left: 10px;
+  /* position: absolute;
+    right: 10px;
+    top: 17px;
+    bottom: 17px; */
+}
+.dash {
+  color: #f8f8ff;
+  display: inline-block;
+  /* position: absolute;
+    left: 10px;
+    top: -10px;
+    bottom: 40px; */
+}
+
+.signout a {
+  margin-right: 10px;
+  text-decoration: none !important;
+  color: #f2f2f2;
+  font-weight: 600;
+}
+
+#customers {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#customers td,
+#customers th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#customers tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#customers tr:hover {
+  background-color: #ddd;
+}
+
+#customers th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: rgb(170, 199, 218);
+  color: white;
+}
+.butnv {
+  background-color: #43bf7f;
+  color: #f8f8ff;
+}
+.butnnv {
+  background-color: #d13d3d;
+  color: #f8f8ff;
+}
