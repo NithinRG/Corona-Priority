@@ -18,7 +18,7 @@
         </div>
         <ul class="nav-items">
             <li>
-                <a href="#">
+                <a href="/">
                     <span class="title">Home</span>
                 </a>
             </li>
@@ -27,9 +27,9 @@
                     <span class="title">Profile</span>
                 </a>
             </li>
-            {% if user['status'] is true %}
+            {% if status is true %}
             <li>
-                <a href="/passport">
+                <a href="#">
                     <span class="title">Passport</span>
                 </a>
             </li>
@@ -46,16 +46,12 @@
             </li>
         </ul>
     </div>
-    <h1 class="welcomeHeader">Welcome {{ user['fname'] }}!</h1>
+    <h1 class="welcomeHeader">{{ user['fname'] }} {{ user['lname'] }}</h1>
     <div class="details">
         <div class="item1"><img src="{{ url_for('static', filename = 'avatar.jpg') }}" alt=""></div>
         <div class="item2">
             <div class="contentWrapper">
-                <span class="name">Name: {{ user['fname'] }} {{ user['lname'] }}</span>
-                <span class="age">Age: {{ user['age'] }} years</span>
-                <span class="city">City: {{ user['city'] }}</span>
-                <span class="state">State: {{ user['state'] }}</span>
-                <span class="score">Priority Score: {{ user['score'] }}</span>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Example&color=0078be" class="qrcode" alt="passport">
             </div>
         </div>
     </div>

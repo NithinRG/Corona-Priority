@@ -25,18 +25,28 @@ def home():
         else:
             user = user_collection.find_one(
                 ({'aadhar_number': session['aadhar_number']}))
-            formattedName = user['fname'] + " " + user['lname']
-            fname = user['fname']
-            lname = user['lname']
-            age = user['age']
-            city = user['city']
-            state = user['state']
-            score = user['score']
-            return render_template("index.html", fname=fname, lname=lname, age=age, city=city, state=state, score=score)
+            return render_template("index.html", user=user)
     elif session['privileges'] == 'admin':
-        users = user_collection.find()
+        users = user_collection.find().sort([("score", -1)])
         numUsers = user_collection.count_documents({})
         return render_template("admin.html", users=users, numUsers=numUsers)
+
+
+@app.route("/passport")
+def passport():
+    if not 'loggedIn' in session:
+        return redirect(url_for("login"))
+    elif session['privileges'] == 'admin':
+        return redirect(url_for("home"))
+    elif session['formFilled'] == False:
+        return redirect(url_for("form"))
+    else:
+        user = user_collection.find_one(
+            ({'aadhar_number': session['aadhar_number']}))
+        if user['status'] == True:
+            return render_template("passport.html", user=user)
+        else:
+            return redirect(url_for("home"))
 
 
 @app.route("/signup", methods=['GET', 'POST'])

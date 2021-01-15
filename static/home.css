@@ -113,6 +113,12 @@ body {
   min-width: 200px;
 }
 
+.qrcode {
+  height: 150px;
+  width: 150px;
+  margin: auto;
+}
+
 @media screen and (max-width: 1200px) {
   .nav-items {
     width: 45%;
